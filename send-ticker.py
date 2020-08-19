@@ -6,6 +6,8 @@ import os
 import re
 import json
 
+FUND_DATA_FILE = '%s/.fund-data.json' % os.getenv('HOME')
+
 def getFundData():
     r = requests.get('https://api.vanguard.com/rs/gre/gra/1.7.0/datasets/urd-product-details.jsonp?path=[id=vanguard-ftse-global-all-cap-index-fund-gbp-acc][0]')
     jsonData = json.loads(re.match(r'callback\((.*)\)', r.text).group(1))
@@ -25,6 +27,27 @@ def sendTicker(data, iftttApiKey):
     }
     requests.post('https://maker.ifttt.com/trigger/daily_ticker/with/key/%s' % iftttApiKey, data=data)
 
+def hasFundDataChanged(data):
+   savedData = loadJSONFromFile(FUND_DATA_FILE)
+   if json.dumps(savedData, sort_keys=True) == json.dumps(data, sort_keys=True):
+      print('Fund data has not changed')
+      return False
+   print ('Fund data has changed')
+   saveJSONToFile(data, FUND_DATA_FILE)
+   return True
+
+def loadJSONFromFile(fileName):
+   try:
+      with open(fileName) as file:
+         return json.load(file)
+   except FileNotFoundError:
+      # Assume the file didn't exist, and return an empty object
+      return {}
+
+def saveJSONToFile(data, fileName):
+   with open(fileName, 'w') as file:
+      json.dump(data, file)
+
 def main():
    # Check for the required environment variables
    try:
@@ -36,8 +59,10 @@ def main():
    # Get fund data
    data = getFundData()
 
-   # Send the notification
-   sendTicker(data, iftttApiKey)
+   # Check if the fund data has changed since last time we checked (e.g. the fund price has had its daily update)
+   if hasFundDataChanged(data):
+      # The fund data had changed - send it in a a notification
+      sendTicker(data, iftttApiKey)
 
 if __name__ == '__main__':
    main()

@@ -1,7 +1,7 @@
-# Daily Ticker 📈
+# Vanguard Ticker 📈
 
-Get a daily push notification containing Vanguard FTSE Global All Cap Index Fund
-data!
+Get a push notification containing Vanguard FTSE Global All Cap Index Fund
+data whenenver the fund price is updated.
 
 ### Prerequisites
 * [Python3](https://www.python.org/download/releases/3.0/)
@@ -23,7 +23,7 @@ data!
    1. [Create](https://ifttt.com/create) a new IFTTT applet
    1. For _This_, select the _Webhooks_ service and choose
       _Receive a web request_
-   1. Enter `daily_ticker` as the Event Name and click _Create Trigger_
+   1. Enter `vanguard_ticker` as the Event Name and click _Create Trigger_
    1. For _That_, select the _Notifications_ service and choose
       _Send a rich notification from the IFTTT app_
    1. Change the _Title_ field to `{{Value1}}`
@@ -50,12 +50,13 @@ data!
    ```
 
 
-### Getting a daily ticker
+### Getting notifications
 
-To get the stock ticker sent to you every day, you can use crontab on a device
-of your choice. For example, to get a highlight at
-[9am each weekday](https://crontab.guru/#0_9_*_*_1-5), edit your
-crontab with `crontab -e` and add:
+To get a notification sent to you whenever the fund price has updated, use
+crontab on a device of your choice to periodically fetch the latest fund price.
+You will only be notified when the price has changed (the notification will
+contain the closing price along with the real and percentage change):
 ```
-0 9 * * 1-5 cd ~/<path-to-repo>/daily-vanguard-ticker && pipenv run python send-ticker.py
+*/30 * * * *  cd ~/<path-to-repo>/vanguard-ticker && pipenv run python send-ticker.py
 ```
+
