@@ -25,7 +25,7 @@ def sendTicker(data, iftttApiKey):
         'value2': 'Value: %s\nChange: %s (%s)' % (data['value'], data['amountChange'], data['percentChange']),
         'value3': 'https://cdn-static.findly.com/wp-content/uploads/sites/11/2015/02/CareersSite_FeaturedImage_Home_640x480.jpg'
     }
-    requests.post('https://maker.ifttt.com/trigger/daily_ticker/with/key/%s' % iftttApiKey, data=data)
+    requests.post('https://maker.ifttt.com/trigger/notification/with/key/%s' % iftttApiKey, data=data)
 
 def hasFundDataChanged(data):
    savedData = loadJSONFromFile(FUND_DATA_FILE)
